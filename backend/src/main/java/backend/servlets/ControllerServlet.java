@@ -27,15 +27,11 @@ public class ControllerServlet extends HttpServlet {
 
         String action = req.getParameter("action");
 
-        if (action == null || action.equals("home")) {
-            List<HistoryEntry> history = historyManager != null ? historyManager.getAll() : List.of();
-            req.setAttribute("historyRecords", history);  // передаем в JSP
-
-            req.getRequestDispatcher("/index.jsp").forward(req, resp);
-            return;
-        }
-
         req.setAttribute("historyRecords", historyManager.getAll());
+
+        if (action == null || action.equals("home")) {
+            req.getRequestDispatcher("/index.jsp").forward(req, resp);
+        }
 
         switch (action) {
             case "check" -> req.getRequestDispatcher("/areaCheck").forward(req, resp);
