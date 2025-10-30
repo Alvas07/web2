@@ -25,7 +25,7 @@ public class AreaCheckServlet extends HttpServlet {
     private AreaCheckService areaCheckService;
 
     @Override
-    public void init() throws ServletException {
+    public void init() {
         List<QuadrantShapeTemplate> templates = List.of(
                 new QuadrantShapeTemplate(new RectangleFactory(1.0, 1.0), 3),
                 new QuadrantShapeTemplate(new TriangleFactory(1.0, 1.0), 4),
