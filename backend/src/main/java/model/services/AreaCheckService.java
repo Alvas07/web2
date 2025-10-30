@@ -1,6 +1,6 @@
 package model.services;
 
-import model.models.HistoryEntry;
+import backend.utils.CheckResult;
 import model.models.Point;
 import model.shapes.QuadrantShapeTemplate;
 import model.shapes.templates.QuadrantShape;
@@ -16,18 +16,16 @@ public class AreaCheckService {
         this.shapeTemplates = shapeTemplates;
     }
 
-    public List<HistoryEntry> checkPoints(List<Point> points, String now) {
-        List<Shape> shapes = new ArrayList<>();
-        for (QuadrantShapeTemplate template : shapeTemplates) {
-            shapes.add(new QuadrantShape(template.getFactory().create(points.get(0).r()), template.getQuadrant()));
-        }
-        HitChecker hitChecker = new HitChecker(shapes);
-
-        List<HistoryEntry> entries = new ArrayList<>();
-        for (Point p : points) {
-            boolean result = hitChecker.isHit(p);
-            entries.add(new HistoryEntry(p, result, now));
-        }
-        return entries;
+    public List<CheckResult> checkPoints(List<Point> points) {
+       List<CheckResult> results = new ArrayList<>();
+       for (Point p : points) {
+           List<Shape> shapesForPoint = new ArrayList<>();
+           for (QuadrantShapeTemplate template : shapeTemplates) {
+               shapesForPoint.add(new QuadrantShape(template.getFactory().create(p.r()), template.getQuadrant()));
+           }
+           HitChecker checker = new HitChecker(shapesForPoint);
+           results.add(new CheckResult(p, checker.isHit(p)));
+       }
+       return results;
     }
 }

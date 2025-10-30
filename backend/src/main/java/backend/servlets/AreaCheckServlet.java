@@ -1,5 +1,6 @@
 package backend.servlets;
 
+import backend.utils.CheckResult;
 import backend.utils.RequestParser;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -17,7 +18,6 @@ import model.shapes.factories.TriangleFactory;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @WebServlet(name = "AreaCheckServlet", urlPatterns = {"/areaCheck"})
@@ -38,7 +38,7 @@ public class AreaCheckServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         long start = System.nanoTime();
         HttpSession session = req.getSession();
-        String now = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        LocalDateTime now = LocalDateTime.now();
 
         HistoryManager historyManager = (HistoryManager) session.getAttribute("history");
         if (historyManager == null) {
@@ -52,13 +52,14 @@ public class AreaCheckServlet extends HttpServlet {
             req.getRequestDispatcher("/error.jsp").forward(req, resp);
         }
 
-        double r = pr.points().get(0).r();
+        List<CheckResult> checkResults = areaCheckService.checkPoints(pr.points());
 
-        List<HistoryEntry> newEntries = areaCheckService.checkPoints(pr.points(), now);
+        double execTime = (System.nanoTime() - start) / 1e6;
+
+        List<HistoryEntry> newEntries = checkResults.stream().map(cr -> new HistoryEntry(cr.point(), cr.hit(), now, execTime)).toList();
 
         newEntries.forEach(historyManager::add);
 
-        double execTime = (System.nanoTime() - start) / 1e6;
         req.setAttribute("execTime", execTime);
         req.setAttribute("results", newEntries);
 
