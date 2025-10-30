@@ -6,11 +6,9 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import model.models.HistoryEntry;
 import model.services.HistoryManager;
 
 import java.io.IOException;
-import java.util.List;
 
 @WebServlet(name = "ControllerServlet", urlPatterns = {"/controller"})
 public class ControllerServlet extends HttpServlet {
