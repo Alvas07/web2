@@ -16,6 +16,7 @@ public class ClearHistoryServlet extends HttpServlet {
         HttpSession session = req.getSession(false);
         if (session != null) {
             session.removeAttribute("history");
+            session.removeAttribute("historyRecords");
         }
         resp.sendRedirect(req.getContextPath() + "/controller?action=home");
     }

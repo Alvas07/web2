@@ -23,9 +23,9 @@ public class ControllerServlet extends HttpServlet {
             session.setAttribute("history", historyManager);
         }
 
-        String action = req.getParameter("action");
+        session.setAttribute("historyRecords", historyManager.getAll());
 
-        req.setAttribute("historyRecords", historyManager.getAll());
+        String action = req.getParameter("action");
 
         if (action == null || action.equals("home")) {
             req.getRequestDispatcher("/index.jsp").forward(req, resp);

@@ -1,6 +1,12 @@
 <%@ page import="model.models.HistoryEntry" %>
 <%@ page import="java.util.List" %>
+<%@ page import="java.time.format.DateTimeFormatter" %>
 <%@ page contentType="text/html; charset=UTF-8" %>
+
+<%
+    List<HistoryEntry> results = (List<HistoryEntry>) request.getAttribute("results");
+    DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+%>
 
 <!DOCTYPE html>
 <html lang="ru">
@@ -42,18 +48,16 @@
                     <th>Время выполнения (мс)</th>
                 </tr>
                 <%
-                    List<HistoryEntry> results = (List<HistoryEntry>) request.getAttribute("results");
-                    Double execTime = (Double) request.getAttribute("execTime");
                     if (results != null && !results.isEmpty()) {
                         for (HistoryEntry entry : results) {
                 %>
                 <tr class="<%= entry.result() ? "history-item hit" : "history-item miss" %>">
-                    <td><%= entry.now() %></td>
+                    <td><%= entry.now().format(fmt) %></td>
                     <td><%= entry.result() ? "Попал 🎯" : "Мимо ❌" %></td>
                     <td><%= entry.point().x() %></td>
                     <td><%= entry.point().y() %></td>
                     <td><%= entry.point().r() %></td>
-                    <td><%= execTime != null ? String.format("%.3f", execTime) : "-" %></td>
+                    <td><%= String.format("%.3f", entry.execTime()) %></td>
                 </tr>
                 <%
                     }
