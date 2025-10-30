@@ -2,6 +2,7 @@ package backend.servlets;
 
 import backend.utils.CheckResult;
 import backend.utils.RequestParser;
+import io.vavr.control.Either;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -9,6 +10,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import model.models.HistoryEntry;
+import model.models.Point;
 import model.services.AreaCheckService;
 import model.services.HistoryManager;
 import model.shapes.QuadrantShapeTemplate;
@@ -46,13 +48,15 @@ public class AreaCheckServlet extends HttpServlet {
             session.setAttribute("history", historyManager);
         }
 
-        RequestParser.ParseResult pr = RequestParser.parse(req);
-        if (pr.hasError()) {
-            req.setAttribute("errorMessage", pr.errorMessage());
+        Either<String, List<Point>> parseResult = RequestParser.parse(req);
+
+        if (parseResult.isLeft()) {
+            req.setAttribute("errorMessage", parseResult.getLeft());
             req.getRequestDispatcher("/error.jsp").forward(req, resp);
         }
 
-        List<CheckResult> checkResults = areaCheckService.checkPoints(pr.points());
+        List<Point> points = parseResult.get();
+        List<CheckResult> checkResults = areaCheckService.checkPoints(points);
 
         double execTime = (System.nanoTime() - start) / 1e6;
 
