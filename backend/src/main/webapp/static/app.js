@@ -1,5 +1,5 @@
 // DOM-элементы
-const canvas = document.querySelector('.graph canvas');
+const canvas = document.getElementById('graph');
 const ctx = canvas.getContext('2d');
 
 const xGroup = document.getElementById('xGroup');
@@ -7,13 +7,11 @@ const yInput = document.getElementById('yInput');
 const rSelect = document.getElementById('rSelect');
 const form = document.getElementById('coordsForm');
 
-// начальные значения
-let selectedR = parseFloat(document.getElementById('rSelect').value);
-const AXIS_MIN = -6;
+let selectedR = parseFloat(rSelect.value);
+const AXIS_MIN = -5;
 const AXIS_MAX = 6;
-let graphClickSubmit = false;
 
-// canvas
+// canvas setup
 function resizeCanvas() {
   const dpr = window.devicePixelRatio || 1;
   const rect = canvas.getBoundingClientRect();
@@ -65,33 +63,26 @@ function drawArea() {
   ctx.fill();
 }
 
-// выбор X
+// выбор X (визуальный)
 xGroup.addEventListener("change", e => {
   if(e.target.tagName==="INPUT"){
     e.target.parentElement.classList.toggle("active", e.target.checked);
   }
 });
 
-// валидация Y
+// валидация Y в основной форме
 yInput.addEventListener("input", ()=>{
   let val = yInput.value;
   val = val.replace(/[^0-9.,-]/g, "");
-
   if (val.includes("-")) val = "-" + val.replace(/-/g, "");
   val = val.replace(",", ".");
-
   const firstDot = val.indexOf(".");
   if (firstDot !== -1) val = val.slice(0, firstDot + 1) + val.slice(firstDot + 1).replace(/\./g, "");
   val = val.replace(/^(-?)0+(\d)/, "$1$2");
-
   yInput.value = val;
-
   const y = parseFloat(val);
-  if (isNaN(y) || y < -3 || y > 3) {
-    yInput.classList.add("invalid");
-  } else {
-    yInput.classList.remove("invalid");
-  }
+  if (isNaN(y) || y < -3 || y > 3) yInput.classList.add("invalid");
+  else yInput.classList.remove("invalid");
 });
 
 // изменение R
@@ -108,46 +99,33 @@ canvas.addEventListener("click", (event) => {
   }
 
   const rect = canvas.getBoundingClientRect();
-
-  // перевод пикселей в координаты графика
   const x = ((event.clientX - rect.left) / rect.width - 0.5) * 2 * AXIS_MAX;
   const y = (0.5 - (event.clientY - rect.top) / rect.height) * 2 * AXIS_MAX;
 
-  // очищаем старые скрытые поля
-  form.innerHTML = "";
+  // Строим URL: берём исходный атрибут action (избегаем коллизии с input name="action")
+  const formActionAttr = form.getAttribute('action') || 'controller';
+  const url = new URL(formActionAttr, window.location.href);
+  const sp = url.searchParams;
+  sp.set("action", "check");
+  sp.set("fromGraph", "true");
+  sp.set("x", x.toFixed(3));
+  sp.set("y", y.toFixed(3));
+  sp.set("r", String(selectedR));
+  sp.set("axisMin", String(AXIS_MIN));
+  sp.set("axisMax", String(AXIS_MAX));
 
-  [["x", x.toFixed(3)], ["y", y.toFixed(3)], ["r", selectedR], ["action", "check"]]
-    .forEach(([name, val]) => {
-      const hidden = document.createElement("input");
-      hidden.type = "hidden";
-      hidden.name = name;
-      hidden.value = val;
-      form.appendChild(hidden);
-    });
-
-  graphClickSubmit = true;
-  form.setAttribute("novalidate", "true");
-
-  form.requestSubmit();
+  window.location.assign(url.toString());
 });
 
-// submit формы с валидацией
+// submit основной формы с валидацией
 form.addEventListener("submit", e=>{
-  if (graphClickSubmit) {
-    graphClickSubmit = false; // сброс
-    form.removeAttribute("novalidate");
-    return; // пропускаем валидацию формы
-  }
-
   const selectedXs = [...xGroup.querySelectorAll("input:checked")].map(cb=>parseFloat(cb.value));
   const yVal = parseFloat(yInput.value.trim().replace(',','.'));
   const rVal = parseFloat(rSelect.value);
-
   let errors = [];
   if(selectedXs.length === 0) errors.push("Выберите хотя бы один X.");
   if(isNaN(yVal) || yVal < -3 || yVal > 3) errors.push("Y должен быть в диапазоне [-3;3].");
   if(isNaN(rVal)) errors.push("Выберите R.");
-
   if(errors.length > 0){
     e.preventDefault();
     alert(errors.join("\n"));
@@ -163,6 +141,6 @@ function drawCanvas(){
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  let selectedR = parseFloat(document.getElementById('rSelect').value);
+  selectedR = parseFloat(rSelect.value);
   drawCanvas();
 });

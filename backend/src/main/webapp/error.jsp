@@ -10,7 +10,7 @@
     <title>Error</title>
     <link
             rel="stylesheet"
-            href="${pageContext.request.contextPath}/static/styles.css"
+            href="${pageContext.request.contextPath}/static/styles.css?v=2"
     >
 </head>
 <body>
@@ -26,15 +26,15 @@
 </header>
 
 <main>
-    <div class="error-card">
-        <h1>Что-то пошло не так 😢</h1>
-
-        <p class="error-message">
+    <div class="card" style="max-width: 720px; width: 100%; text-align: center; margin: auto;">
+        <h2 style="margin-top: 0;">Что-то пошло не так 😢</h2>
+        <p style="font-size: 1rem; margin: 0.5rem 0 1rem 0;">
             <%= request.getAttribute("errorMessage") != null
                     ? request.getAttribute("errorMessage")
                     : "Произошла непредвиденная ошибка. Попробуйте позже." %>
         </p>
     </div>
+    
 </main>
 <script src="${pageContext.request.contextPath}/static/app.js"></script>
 </body>

@@ -19,7 +19,7 @@
     <title>HitChecker</title>
     <link
             rel="stylesheet"
-            href="${pageContext.request.contextPath}/static/styles.css"
+            href="${pageContext.request.contextPath}/static/styles.css?v=2"
     >
 </head>
 <body>
@@ -126,6 +126,6 @@
     </section>
 </main>
 
-<script src="${pageContext.request.contextPath}/static/app.js"></script>
+<script src="${pageContext.request.contextPath}/static/app.js?v=2"></script>
 </body>
 </html>

@@ -19,7 +19,7 @@
     <title>Check Result</title>
     <link
             rel="stylesheet"
-            href="${pageContext.request.contextPath}/static/styles.css"
+            href="${pageContext.request.contextPath}/static/styles.css?v=2"
     >
 </head>
 <body>
