@@ -142,6 +142,62 @@ select {
   background: rgba(231, 76, 60, 0.2);
 }
 
+/* Стили для своих и чужих точек */
+.history-item.own-point {
+  opacity: 1;
+  font-weight: 500;
+}
+
+.history-item.other-point {
+  opacity: 0.6;
+  font-weight: normal;
+}
+
+.history-item.other-point.hit {
+  background: rgba(46, 204, 113, 0.1);
+}
+
+.history-item.other-point.miss {
+  background: rgba(231, 76, 60, 0.1);
+}
+
+/* Стили для уведомлений */
+#notifications-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  pointer-events: none;
+}
+
+.notification {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  padding: 12px 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  max-width: 350px;
+  opacity: 0;
+  transform: translateX(400px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  pointer-events: auto;
+  border-left: 4px solid var(--accent);
+  font-size: 14px;
+  color: var(--text);
+}
+
+.notification.show {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.notification:hover {
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
 main {
   display: flex;
   flex-direction: column;

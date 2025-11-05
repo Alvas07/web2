@@ -1,11 +1,13 @@
 <%@ page import="model.models.HistoryEntry" %>
 <%@ page import="java.util.List" %>
 <%@ page import="java.time.format.DateTimeFormatter" %>
+<%@ page import="java.util.Locale" %>
 <%@ page contentType="text/html; charset=UTF-8" %>
 
 <%
     List<HistoryEntry> history = (List<HistoryEntry>) session.getAttribute("historyRecords");
     DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    String sessionId = session.getId();
 %>
 
 <!DOCTYPE html>
@@ -19,10 +21,11 @@
     <title>HitChecker</title>
     <link
             rel="stylesheet"
-            href="${pageContext.request.contextPath}/static/styles.css?v=2"
+            href="${pageContext.request.contextPath}/static/styles.css?v=3"
     >
 </head>
 <body>
+<div id="notifications-container"></div>
 <header>
     <div class="header-left">
         <h1>Дядев Владислав Александрович • P3231 • Вариант 2824</h1>
@@ -105,14 +108,21 @@
                     <%
                         if (history != null && !history.isEmpty()) {
                             for (HistoryEntry entry : history) {
+                                boolean isOwn = entry.sessionId() != null && entry.sessionId().equals(sessionId);
+                                String rowClass = entry.result() ? "history-item hit" : "history-item miss";
+                                if (isOwn) {
+                                    rowClass += " own-point";
+                                } else {
+                                    rowClass += " other-point";
+                                }
                     %>
-                    <tr class="<%= entry.result() ? "history-item hit" : "history-item miss" %>">
+                    <tr class="<%= rowClass %>" data-session-id="<%= entry.sessionId() != null ? entry.sessionId() : "" %>">
                         <td><%= entry.now().format(fmt) %></td>
                         <td><%= entry.result() ? "Попал 🎯" : "Мимо ❌" %></td>
                         <td><%= entry.point().x() %></td>
                         <td><%= entry.point().y() %></td>
                         <td><%= entry.point().r() %></td>
-                        <td><%= String.format("%.3f", entry.execTime()) %></td>
+                        <td><%= String.format(Locale.US, "%.3f", entry.execTime()) %></td>
                     </tr>
                     <%
                             }
@@ -126,6 +136,9 @@
     </section>
 </main>
 
-<script src="${pageContext.request.contextPath}/static/app.js?v=2"></script>
+<script>
+    window.CURRENT_SESSION_ID = '<%= sessionId %>';
+</script>
+<script src="${pageContext.request.contextPath}/static/app.js?v=6"></script>
 </body>
 </html>

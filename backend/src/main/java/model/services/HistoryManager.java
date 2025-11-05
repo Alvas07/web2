@@ -26,4 +26,8 @@ public class HistoryManager implements Serializable {
     public void clear() {
         history.clear();
     }
+
+    public void removeBySessionId(String sessionId) {
+        history.removeIf(entry -> entry.sessionId() != null && entry.sessionId().equals(sessionId));
+    }
 }

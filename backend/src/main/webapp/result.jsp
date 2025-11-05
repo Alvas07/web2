@@ -1,6 +1,7 @@
 <%@ page import="model.models.HistoryEntry" %>
 <%@ page import="java.util.List" %>
 <%@ page import="java.time.format.DateTimeFormatter" %>
+<%@ page import="java.util.Locale" %>
 <%@ page contentType="text/html; charset=UTF-8" %>
 
 <%
@@ -28,8 +29,16 @@
         <h1>Результаты проверки</h1>
     </div>
     <div class="header-right">
-        <form action="controller" method="get">
-            <button name="action" value="home">🏠 На главную</button>
+        <form action="controller" method="get" id="backToHomeForm">
+            <input type="hidden" name="action" value="home">
+            <%
+                if (results != null && !results.isEmpty()) {
+                    // Берем R из первой точки
+                    double r = results.get(0).point().r();
+            %>
+            <input type="hidden" name="r" value="<%= r %>">
+            <% } %>
+            <button type="submit">🏠 На главную</button>
         </form>
     </div>
 </header>
@@ -57,7 +66,7 @@
                     <td><%= entry.point().x() %></td>
                     <td><%= entry.point().y() %></td>
                     <td><%= entry.point().r() %></td>
-                    <td><%= String.format("%.3f", entry.execTime()) %></td>
+                    <td><%= String.format(Locale.US, "%.3f", entry.execTime()) %></td>
                 </tr>
                 <%
                     }
