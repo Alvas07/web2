@@ -1,0 +1,5 @@
+.DS_Store
+.idea
+backend/.mvn
+backend/src/test
+backend/target
